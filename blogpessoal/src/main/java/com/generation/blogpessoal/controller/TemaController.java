@@ -46,7 +46,7 @@ public class TemaController {
                 .body(temaRepository.save(theme));
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public ResponseEntity<Tema> put(@PathVariable UUID id, @Valid @RequestBody Tema theme){
         theme.setId(id);
         return temaRepository.findById(id)
