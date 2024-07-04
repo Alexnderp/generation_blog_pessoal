@@ -2,6 +2,7 @@ package com.generation.blogpessoal.controller;
 
 import com.generation.blogpessoal.model.Postagem;
 import com.generation.blogpessoal.repository.PostagemRepository;
+import com.generation.blogpessoal.repository.TemaRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,8 @@ public class PostagemController {
 
     @Autowired
     private PostagemRepository postagemRepository;
+    @Autowired
+    private TemaRepository temaRepository;
 
     @GetMapping
     public ResponseEntity<List<Postagem>> getAll(){
@@ -40,17 +43,23 @@ public class PostagemController {
 
     @PostMapping
     public ResponseEntity<Postagem> create(@Valid @RequestBody Postagem postagem){
-        return ResponseEntity.status(HttpStatus.CREATED)
+        if (temaRepository.existsById(postagem.getTema().getId()))
+            return ResponseEntity.status(HttpStatus.CREATED)
                 .body(postagemRepository.save(postagem));
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tema não encontrado", null);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Postagem> update (@PathVariable UUID id, @Valid @RequestBody Postagem postagem){
-        postagem.setId(id);
-        return postagemRepository.findById(id)
-                .map(response -> ResponseEntity.status(HttpStatus.OK)
-                        .body(postagemRepository.save(postagem)))
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        if (postagemRepository.existsById(id)){
+            postagem.setId(id);
+            if (temaRepository.existsById(postagem.getTema().getId()))
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(postagemRepository.save(postagem));
+
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tema não encontrado", null);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @DeleteMapping("/{id}")
