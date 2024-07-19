@@ -1,0 +1,59 @@
+package com.generation.blogpessoal.controller;
+
+import com.generation.blogpessoal.DTO.LoginDTO;
+import com.generation.blogpessoal.DTO.ResponseDTO;
+import com.generation.blogpessoal.model.Usuario;
+import com.generation.blogpessoal.repository.UsuarioRepository;
+import com.generation.blogpessoal.security.TokenService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/auth")
+public class AuthController {
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private TokenService tokenService;
+
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody LoginDTO login) {
+        Usuario usuario = this.usuarioRepository.findByEmail(login.email())
+                .orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
+        if (passwordEncoder.matches(usuario.getPassword(), login.password())) {
+            String token = this.tokenService.generateToken(usuario);
+            return ResponseEntity.ok(new ResponseDTO(usuario.getEmail(), usuario.getName(), token));
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity register(@RequestBody Usuario usuario) {
+        Optional<Usuario> searchUser = this.usuarioRepository.findByEmail(usuario.getEmail());
+
+        if (searchUser.isEmpty()) {
+            Usuario newUser = new Usuario();
+            newUser.setName(usuario.getName());
+            newUser.setEmail(usuario.getEmail());
+            newUser.setPassword(passwordEncoder.encode(usuario.getPassword()));
+            String token = this.tokenService.generateToken(usuario);
+
+            this.usuarioRepository.save(newUser);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDTO(usuario.getEmail(), usuario.getName(), token));
+        }
+
+        return ResponseEntity.badRequest().build();
+    }
+}
