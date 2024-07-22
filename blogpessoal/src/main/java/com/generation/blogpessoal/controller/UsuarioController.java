@@ -20,7 +20,7 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
     private final UsuarioRepository usuarioRepository;
 
-    @GetMapping
+    @GetMapping()
     public ResponseEntity<List<QueryResponseDTO>> getAll(){
         return ResponseEntity.ok(usuarioRepository.findUsers());
     }
