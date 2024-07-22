@@ -21,7 +21,7 @@ public class UsuarioController {
     private final UsuarioRepository usuarioRepository;
 
     @GetMapping()
-    public ResponseEntity<List<QueryResponseDTO>> getAll(){
+    public ResponseEntity<List<Usuario>> getAll(){
         return ResponseEntity.ok(usuarioRepository.findUsers());
     }
 
