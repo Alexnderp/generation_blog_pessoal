@@ -1,6 +1,5 @@
 package com.generation.blogpessoal.controller;
 
-import com.generation.blogpessoal.DTO.QueryResponseDTO;
 import com.generation.blogpessoal.model.Usuario;
 import com.generation.blogpessoal.repository.UsuarioRepository;
 import com.generation.blogpessoal.service.UsuarioService;
@@ -22,7 +21,7 @@ public class UsuarioController {
 
     @GetMapping()
     public ResponseEntity<List<Usuario>> getAll(){
-        return ResponseEntity.ok(usuarioRepository.findUsers());
+        return ResponseEntity.ok(usuarioRepository.findAll());
     }
 
     @GetMapping("/{id}")
