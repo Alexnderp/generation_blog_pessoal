@@ -1,8 +1,10 @@
 package com.generation.blogpessoal.controller;
 
+import com.generation.blogpessoal.DTO.QueryResponseDTO;
 import com.generation.blogpessoal.model.Usuario;
 import com.generation.blogpessoal.repository.UsuarioRepository;
 import com.generation.blogpessoal.service.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,18 +21,28 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
     private final UsuarioRepository usuarioRepository;
 
+    @Operation(summary = "Get all users",
+            description = "This route returns all users",
+            tags = {"get"})
     @GetMapping()
-    public ResponseEntity<List<Usuario>> getAll(){
-        return ResponseEntity.ok(usuarioRepository.findAll());
+    public ResponseEntity<List<QueryResponseDTO>> getAll() {
+        return ResponseEntity.ok(usuarioService.getAll(usuarioRepository.findAll()));
     }
 
+
+    @Operation(summary = "Get user by ID",
+            description = "This route returns a specific user based on the id provided",
+            tags = {"get"})
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getById(@PathVariable String id){
+    public ResponseEntity<QueryResponseDTO> getById(@PathVariable String id){
         return usuarioRepository.findById(id)
-                .map(response -> ResponseEntity.ok(response))
+                .map(response -> ResponseEntity.ok(usuarioService.getUser(response)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Update user",
+            description = "This route update a specific post based on the id",
+            tags = {"put"})
     @PutMapping
     public ResponseEntity<Usuario> update(@Valid @RequestBody Usuario usuario){
 

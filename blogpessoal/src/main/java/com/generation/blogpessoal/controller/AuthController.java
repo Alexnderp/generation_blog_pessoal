@@ -5,6 +5,8 @@ import com.generation.blogpessoal.DTO.ResponseDTO;
 import com.generation.blogpessoal.model.Usuario;
 import com.generation.blogpessoal.repository.UsuarioRepository;
 import com.generation.blogpessoal.security.TokenService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Auth", description = "API security controller")
 public class AuthController {
 
     @Autowired
@@ -28,6 +31,9 @@ public class AuthController {
     @Autowired
     private TokenService tokenService;
 
+    @Operation(summary = "Login to API",
+            description = "This route logs into the API",
+            tags = {"post"})
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginDTO login) {
         Usuario usuario = this.usuarioRepository.findByEmail(login.email())
@@ -38,7 +44,9 @@ public class AuthController {
         }
         return ResponseEntity.badRequest().build();
     }
-
+    @Operation(summary = "Register to API",
+            description = "This route registers a new user in the API",
+            tags = {"post"})
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody Usuario usuario) {
         Optional<Usuario> searchUser = this.usuarioRepository.findByEmail(usuario.getEmail());
