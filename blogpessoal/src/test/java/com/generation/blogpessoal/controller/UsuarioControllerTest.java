@@ -1,6 +1,6 @@
 package com.generation.blogpessoal.controller;
 
-import com.generation.blogpessoal.DTO.ResponseDTO;
+
 import com.generation.blogpessoal.model.Usuario;
 import com.generation.blogpessoal.repository.UsuarioRepository;
 import org.junit.jupiter.api.BeforeAll;
@@ -33,13 +33,13 @@ public class UsuarioControllerTest {
     void start(){
         usuarioRepository.deleteAll();
 
-        authController.register(new Usuario("","Root","root@root.com","rootroot", " "));
+        authController.register(new Usuario("00001","Root","root@root.com","rootroot", " "));
     }
 
     @Test
     @DisplayName("Register")
     public void createUser(){
-        HttpEntity<Usuario> requestBody = new HttpEntity<Usuario>(new Usuario("","Alex","alex@alex.com","12345678","-"));
+        HttpEntity<Usuario> requestBody = new HttpEntity<Usuario>(new Usuario("1234","Alex","alex@alex.com","12345678","-"));
 
         ResponseEntity<Usuario> responseBody = testRestTemplate.exchange("/auth/register", POST, requestBody, Usuario.class);
 
@@ -49,9 +49,9 @@ public class UsuarioControllerTest {
     @Test
     @DisplayName("Not Duplicate")
     public void notDuplicate(){
-        authController.register(new Usuario("","ze","ze@ze.com","rootroot", " "));
+        authController.register(new Usuario("1222","ze","ze@ze.com","rootroot", " "));
 
-        HttpEntity<Usuario> requestBody = new HttpEntity<Usuario>(new Usuario("","ze","ze@ze.com","rootroot", " "));
+        HttpEntity<Usuario> requestBody = new HttpEntity<Usuario>(new Usuario("1254","ze","ze@ze.com","rootroot", " "));
         ResponseEntity<Usuario> responseBody = testRestTemplate.exchange("/auth/register", POST, requestBody, Usuario.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, responseBody.getStatusCode());
@@ -62,7 +62,7 @@ public class UsuarioControllerTest {
     @DisplayName("Update User")
     public void updateUser() throws Exception{
 
-        ResponseEntity<Usuario> registeredUser = authController.register(new Usuario("","clara","clara@clara.com","rootroot", " "));
+        ResponseEntity<Usuario> registeredUser = authController.register(new Usuario("12554","clara","clara@clara.com","rootroot", " "));
 
         Usuario updateUser = new Usuario(registeredUser.getBody().getId(),"Kiara","clara@clara.com","rootroot", " ");
 
@@ -79,8 +79,8 @@ public class UsuarioControllerTest {
     @Test
     @DisplayName("List all users")
     public void listAllUsers() throws Exception{
-        authController.register(new Usuario("hinsa","ze","ze@ze.com","1234567", " "));
-        authController.register(new Usuario("askdsau","marianne","mari@mari.com","13247658", " "));
+        authController.register(new Usuario("122445","ze","ze@ze.com","1234567", " "));
+        authController.register(new Usuario("144435","marianne","mari@mari.com","13247658", " "));
 
         ResponseEntity<String> response = testRestTemplate
                 .withBasicAuth("root@root.com", "rootroot")

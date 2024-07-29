@@ -1,6 +1,7 @@
 package com.generation.blogpessoal.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,7 @@ public class Usuario {
     private String email;
     @Size(min = 6)
     @NotNull(message = "Senha é um campo obrigatório")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     private String photo;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario", cascade = CascadeType.REMOVE)

@@ -1,4 +1,12 @@
 package com.generation.blogpessoal.DTO;
 
-public record ResponseDTO(String email, String name, String Token) {
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+@AllArgsConstructor
+@Data
+public class ResponseDTO {
+    private String email;
+    private String name;
+    private String Token;
 }

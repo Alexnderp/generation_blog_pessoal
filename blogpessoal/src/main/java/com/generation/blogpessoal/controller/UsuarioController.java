@@ -25,8 +25,8 @@ public class UsuarioController {
             description = "This route returns all users",
             tags = {"get"})
     @GetMapping()
-    public ResponseEntity<List<QueryResponseDTO>> getAll() {
-        return ResponseEntity.ok(usuarioService.getAll(usuarioRepository.findAll()));
+    public ResponseEntity<List<Usuario>> getAll() {
+        return ResponseEntity.ok(usuarioRepository.findAll());
     }
 
 
@@ -34,9 +34,9 @@ public class UsuarioController {
             description = "This route returns a specific user based on the id provided",
             tags = {"get"})
     @GetMapping("/{id}")
-    public ResponseEntity<QueryResponseDTO> getById(@PathVariable String id){
+    public ResponseEntity<Usuario> getById(@PathVariable String id){
         return usuarioRepository.findById(id)
-                .map(response -> ResponseEntity.ok(usuarioService.getUser(response)))
+                .map(response -> ResponseEntity.ok(response))
                 .orElse(ResponseEntity.notFound().build());
     }
 

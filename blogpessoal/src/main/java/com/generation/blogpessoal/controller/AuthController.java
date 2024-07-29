@@ -7,7 +7,6 @@ import com.generation.blogpessoal.repository.UsuarioRepository;
 import com.generation.blogpessoal.security.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +35,10 @@ public class AuthController {
             tags = {"post"})
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginDTO login) {
-        Usuario usuario = this.usuarioRepository.findByEmail(login.email())
+        Usuario usuario = usuarioRepository.findByEmail(login.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
-        if (passwordEncoder.matches(usuario.getPassword(), login.password())) {
-            String token = this.tokenService.generateToken(usuario);
+        if (passwordEncoder.matches(login.getPassword(), usuario.getPassword())) {
+            String token = tokenService.generateToken(usuario);
             return ResponseEntity.ok(new ResponseDTO(usuario.getEmail(), usuario.getName(), token));
         }
         return ResponseEntity.badRequest().build();

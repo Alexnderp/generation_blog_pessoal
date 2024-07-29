@@ -1,3 +1,12 @@
 package com.generation.blogpessoal.DTO;
 
-public record LoginDTO(String email, String password) {}
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class LoginDTO{
+    private String email;
+    private String password;
+}
