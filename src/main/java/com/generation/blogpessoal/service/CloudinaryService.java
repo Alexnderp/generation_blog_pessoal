@@ -1,12 +1,13 @@
 package com.generation.blogpessoal.service;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.rmi.RemoteException;
 import java.util.Map;
 
 @Service
@@ -16,10 +17,17 @@ public class CloudinaryService {
     private Cloudinary cloudinary;
 
     public  String uploadImage(MultipartFile multipartFile) throws IOException{
-        Map<String, String> options = new HashMap<>();
-        options.put("folder", "users");
+        Map<String, Object> options = ObjectUtils.asMap(
+          "use_filename",true,
+                "asset_folder",""
+        );
 
-        Map uploadResult = cloudinary.uploader().upload(multipartFile.getBytes(), options);
-        return uploadResult.get("url").toString();
+        try {
+            Map uploadResult = cloudinary.uploader().upload(multipartFile.getBytes(), options);
+            return uploadResult.get("secure_url").toString();
+        } catch (Exception e){
+            throw new RemoteException("Erro durante o upload");
+        }
+
     }
 }

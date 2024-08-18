@@ -19,7 +19,8 @@ public class CloudinaryConfig {
 
     @Bean
     public Cloudinary cloudinary(){
-        Cloudinary cloudinary  = new Cloudinary("cloudinary://" + cloudName + "/" + cloudKey + "/" + cloudSecret);
+        Cloudinary cloudinary  = new Cloudinary("cloudinary://"+ cloudKey + ":" + cloudSecret + "@" + cloudName);
+        cloudinary.config.secure = true;
         return  cloudinary;
     }
 }
