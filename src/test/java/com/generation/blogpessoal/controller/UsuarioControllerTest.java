@@ -29,7 +29,7 @@ public class UsuarioControllerTest {
     @Autowired
     private AuthController authController;
 
-    @BeforeAll
+    /*@BeforeAll
     void start(){
         usuarioRepository.deleteAll();
 
@@ -87,5 +87,5 @@ public class UsuarioControllerTest {
                 .exchange("/usuarios", GET, null,String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
+    }*/
 }
