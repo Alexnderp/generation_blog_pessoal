@@ -3,13 +3,16 @@ package com.generation.blogpessoal.controller;
 import com.generation.blogpessoal.DTO.QueryResponseDTO;
 import com.generation.blogpessoal.model.Usuario;
 import com.generation.blogpessoal.repository.UsuarioRepository;
+import com.generation.blogpessoal.service.CloudinaryService;
 import com.generation.blogpessoal.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -20,6 +23,7 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
     private final UsuarioRepository usuarioRepository;
+    private final CloudinaryService cloudinaryService;
 
     @Operation(summary = "Get all users",
             description = "This route returns all users",
@@ -44,11 +48,17 @@ public class UsuarioController {
             description = "This route update a specific post based on the id",
             tags = {"put"})
     @PutMapping
-    public ResponseEntity<Usuario> update(@Valid @RequestBody Usuario usuario){
+    public ResponseEntity<Usuario> update(@Valid @RequestBody Usuario usuario, @RequestParam("file") MultipartFile file){
 
-        return usuarioService.update(usuario)
-                .map(response -> ResponseEntity.ok().body(response))
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            String photo = cloudinaryService.uploadImage(file);
+            usuario.setPhoto(photo);
+            return usuarioService.update(usuario)
+                    .map(response -> ResponseEntity.ok().body(response))
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IOException e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 }

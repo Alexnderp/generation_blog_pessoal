@@ -5,6 +5,7 @@ import com.generation.blogpessoal.DTO.ResponseDTO;
 import com.generation.blogpessoal.model.Usuario;
 import com.generation.blogpessoal.repository.UsuarioRepository;
 import com.generation.blogpessoal.security.TokenService;
+import com.generation.blogpessoal.service.CloudinaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @RestController
@@ -27,6 +30,8 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     @Operation(summary = "Login to API",
             description = "This route logs into the API",
@@ -45,20 +50,26 @@ public class AuthController {
             description = "This route registers a new user in the API",
             tags = {"post"})
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody Usuario usuario) {
-        Optional<Usuario> searchUser = this.usuarioRepository.findByEmail(usuario.getEmail());
+    public ResponseEntity register(@RequestBody Usuario usuario, @RequestParam("file") MultipartFile file) {
+        try {
+            Optional<Usuario> searchUser = this.usuarioRepository.findByEmail(usuario.getEmail());
+            if (searchUser.isEmpty()) {
+                String photo = cloudinaryService.uploadImage(file);
+                Usuario newUser = new Usuario();
+                newUser.setName(usuario.getName());
+                newUser.setEmail(usuario.getEmail());
+                newUser.setPassword(passwordEncoder.encode(usuario.getPassword()));
+                newUser.setPhoto(photo);
+                String token = this.tokenService.generateToken(usuario);
 
-        if (searchUser.isEmpty()) {
-            Usuario newUser = new Usuario();
-            newUser.setName(usuario.getName());
-            newUser.setEmail(usuario.getEmail());
-            newUser.setPassword(passwordEncoder.encode(usuario.getPassword()));
-            String token = this.tokenService.generateToken(usuario);
+                this.usuarioRepository.save(newUser);
+                return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDTO(usuario.getEmail(), usuario.getName(), token));
+            }
 
-            this.usuarioRepository.save(newUser);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDTO(usuario.getEmail(), usuario.getName(), token));
+        }catch (IOException e){
+            return ResponseEntity.badRequest().build();
+
         }
-
         return ResponseEntity.badRequest().build();
     }
 }

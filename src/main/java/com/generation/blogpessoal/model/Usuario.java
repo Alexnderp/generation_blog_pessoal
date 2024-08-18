@@ -23,7 +23,6 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-
     @NotBlank(message = "Nome é um campo obrigtório")
     private String name;
     @NotBlank(message = "Email é um campo obrigatório")
