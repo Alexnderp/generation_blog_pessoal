@@ -49,9 +49,12 @@ public class AuthController {
     @Operation(summary = "Register to API",
             description = "This route registers a new user in the API",
             tags = {"post"})
-    @PostMapping("/register")
-    public ResponseEntity register(@RequestBody Usuario usuario, @RequestParam("file") MultipartFile file) {
+    @PostMapping(value = "/register", consumes = "multipart/form-data")
+    public ResponseEntity register(@RequestParam("email") String email,
+                                   @RequestParam("name") String name,
+                                   @RequestParam("password") String password, @RequestPart("photo") MultipartFile file) {
         try {
+            Usuario usuario = new Usuario(null,name,email,password,null);
             Optional<Usuario> searchUser = this.usuarioRepository.findByEmail(usuario.getEmail());
             if (searchUser.isEmpty()) {
                 String photo = cloudinaryService.uploadImage(file);
