@@ -14,7 +14,7 @@ import java.time.ZoneOffset;
 
 @Service
 public class TokenService {
-    @Value("${JWT_SECRET}")
+    @Value("${JWTSECRET}")
     private String secret;
     public String generateToken(Usuario usuario){
         try {
