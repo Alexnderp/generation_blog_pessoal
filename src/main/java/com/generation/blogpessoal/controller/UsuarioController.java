@@ -38,7 +38,7 @@ public class UsuarioController {
             description = "This route returns a specific user based on the id provided",
             tags = {"get"})
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getById(@PathVariable String id){
+    public ResponseEntity<Usuario> getById(@PathVariable String id) {
         return usuarioRepository.findById(id)
                 .map(response -> ResponseEntity.ok(response))
                 .orElse(ResponseEntity.notFound().build());
@@ -48,15 +48,20 @@ public class UsuarioController {
             description = "This route update a specific post based on the id",
             tags = {"put"})
     @PutMapping
-    public ResponseEntity<Usuario> update(@Valid @RequestBody Usuario usuario, @RequestParam("file") MultipartFile file){
+    public ResponseEntity<Usuario> update(@Valid @RequestParam("id") String id,
+                                          @RequestParam("email") String email,
+                                          @RequestParam("name") String name,
+                                          @RequestParam("password") String password,
+                                          @RequestPart("photo") MultipartFile file) {
 
         try {
+            Usuario usuario = new Usuario(id, name, email, password, null);
             String photo = cloudinaryService.uploadImage(file);
             usuario.setPhoto(photo);
             return usuarioService.update(usuario)
                     .map(response -> ResponseEntity.ok().body(response))
                     .orElse(ResponseEntity.notFound().build());
-        } catch (IOException e){
+        } catch (IOException e) {
             return ResponseEntity.badRequest().build();
         }
     }

@@ -46,6 +46,7 @@ public class AuthController {
         }
         return ResponseEntity.badRequest().build();
     }
+
     @Operation(summary = "Register to API",
             description = "This route registers a new user in the API",
             tags = {"post"})
@@ -54,7 +55,7 @@ public class AuthController {
                                    @RequestParam("name") String name,
                                    @RequestParam("password") String password, @RequestPart("photo") MultipartFile file) {
         try {
-            Usuario usuario = new Usuario(null,name,email,password,null);
+            Usuario usuario = new Usuario(null, name, email, password, null);
             Optional<Usuario> searchUser = this.usuarioRepository.findByEmail(usuario.getEmail());
             if (searchUser.isEmpty()) {
                 String photo = cloudinaryService.uploadImage(file);
@@ -69,7 +70,7 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDTO(usuario.getEmail(), usuario.getName(), token));
             }
 
-        }catch (IOException e){
+        } catch (IOException e) {
             return ResponseEntity.badRequest().build();
 
         }
