@@ -42,7 +42,7 @@ public class AuthController {
                 .orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
         if (passwordEncoder.matches(login.getPassword(), usuario.getPassword())) {
             String token = tokenService.generateToken(usuario);
-            return ResponseEntity.ok(new ResponseDTO(usuario.getEmail(), usuario.getName(), token));
+            return ResponseEntity.ok(new ResponseDTO(usuario.getId(), usuario.getEmail(), usuario.getName(), usuario.getPhoto(), token));
         }
         return ResponseEntity.badRequest().build();
     }
@@ -67,7 +67,7 @@ public class AuthController {
                 String token = this.tokenService.generateToken(usuario);
 
                 this.usuarioRepository.save(newUser);
-                return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDTO(usuario.getEmail(), usuario.getName(), token));
+                return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDTO(usuario.getId(), usuario.getEmail(), usuario.getName(), usuario.getPhoto(), token));
             }
 
         } catch (IOException e) {
