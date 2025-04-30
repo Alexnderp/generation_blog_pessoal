@@ -3,7 +3,7 @@ package com.generation.blogpessoal.controller;
 import com.generation.blogpessoal.model.Postagem;
 import com.generation.blogpessoal.repository.PostagemRepository;
 import com.generation.blogpessoal.repository.TemaRepository;
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.openai.OpenAiChatModel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -27,8 +27,12 @@ public class PostagemController {
     private PostagemRepository postagemRepository;
     @Autowired
     private TemaRepository temaRepository;
-    @Autowired
-    private ChatLanguageModel chatLanguageModel;
+
+    OpenAiChatModel assistant = OpenAiChatModel.builder()
+            .baseUrl("http://langchain4j.dev/demo/openai/v1")
+            .apiKey("demo")
+            .modelName("gpt-4o-mini")
+            .build();
 
     @Operation(summary = "Get all posts",
             description = "This route returns all posts",
@@ -61,16 +65,17 @@ public class PostagemController {
             tags = {"post"})
     @PostMapping
     public ResponseEntity<Postagem> create(@Valid @RequestBody Postagem postagem) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(postagemRepository.save(postagem));
+        if (temaRepository.existsById(postagem.getTema().getId()))
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(postagemRepository.save(postagem));
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tema não encontrado", null);
     }
 
     @PostMapping("/ia")
-    public ResponseEntity<String> generatePostByIa(@RequestBody String title, String theme) {
-        String prompt = String.format("Escreva um texto para um blog tecnológico com temática de detetive sobre %s focando em %s como assunto geral", theme, title);
-        if (!title.isEmpty() && !theme.isEmpty())
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(chatLanguageModel.generate(prompt));
+    public String generatePostByIa(@RequestBody String title, String theme) {
+        String prompt = String.format("Escreva um texto para um blog tecnológico com temática de detetive sobre %s focando em %s como assunto geral e com no máximo 100 caracteres", theme, title);
+        if (!title.isEmpty())
+            return assistant.chat(prompt) ;
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erro ao gerar postagem", null);
 
     }
