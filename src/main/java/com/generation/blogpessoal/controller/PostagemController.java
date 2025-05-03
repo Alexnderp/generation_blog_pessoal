@@ -75,9 +75,9 @@ public class PostagemController {
     @PostMapping("/ia")
     public String generatePostByIa(@RequestBody String title, Tema theme) {
         String prompt = String.format("Escreva um texto para um blog tecnológico com temática de detetive sobre %s focando em %s como assunto geral e com no máximo 100 caracteres", theme.getDescription(), title);
-        if (!title.isEmpty() && !theme.getDescription().isEmpty())
+
             return assistant.chat(prompt) ;
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erro ao gerar postagem", null);
+
 
     }
 
