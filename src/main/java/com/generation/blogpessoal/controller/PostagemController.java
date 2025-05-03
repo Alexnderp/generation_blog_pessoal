@@ -1,6 +1,7 @@
 package com.generation.blogpessoal.controller;
 
 import com.generation.blogpessoal.model.Postagem;
+import com.generation.blogpessoal.model.Tema;
 import com.generation.blogpessoal.repository.PostagemRepository;
 import com.generation.blogpessoal.repository.TemaRepository;
 import dev.langchain4j.model.openai.OpenAiChatModel;
@@ -72,9 +73,9 @@ public class PostagemController {
     }
 
     @PostMapping("/ia")
-    public String generatePostByIa(@RequestBody String title, String theme) {
-        String prompt = String.format("Escreva um texto para um blog tecnológico com temática de detetive sobre %s focando em %s como assunto geral e com no máximo 100 caracteres", theme, title);
-        if (!title.isEmpty())
+    public String generatePostByIa(@RequestBody String title, Tema theme) {
+        String prompt = String.format("Escreva um texto para um blog tecnológico com temática de detetive sobre %s focando em %s como assunto geral e com no máximo 100 caracteres", theme.getDescription(), title);
+        if (!title.isEmpty() && !theme.getDescription().isEmpty())
             return assistant.chat(prompt) ;
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erro ao gerar postagem", null);
 
