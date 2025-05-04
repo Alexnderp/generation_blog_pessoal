@@ -37,11 +37,14 @@ public class Usuario {
     @JsonIgnoreProperties("usuario")
     private List<Postagem> posts;
 
-    public Usuario( String id, String name, String email, String password, String photo) {
+    public Usuario( String id, String name, String email, String password, String photo, List<Postagem> posts) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.photo = photo;
+        this.posts = posts;
+
+
     }
 }

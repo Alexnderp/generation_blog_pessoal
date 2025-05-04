@@ -55,7 +55,7 @@ public class UsuarioController {
                                           @RequestPart("photo") MultipartFile file) {
 
         try {
-            Usuario usuario = new Usuario(id, name, email, password, null);
+            Usuario usuario = new Usuario(id, name, email, password, null, null);
             String photo = cloudinaryService.uploadImage(file);
             usuario.setPhoto(photo);
             return usuarioService.update(usuario)
