@@ -11,7 +11,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "temas")
-@Getter @Setter
+@Getter
+@Setter
 public class Tema {
 
     @Id
